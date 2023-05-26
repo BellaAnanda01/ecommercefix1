@@ -147,7 +147,7 @@ const CategoryContainer = styled.div`
 `
 
 const Home = () => {
-    const [categories, setCategories] = useState([])
+    const [categories, setCategories] = useState()
     const [error, setError] = useState(null)
 
     const URL = "http://localhost:5500/api/categories"
@@ -164,7 +164,6 @@ const Home = () => {
     useEffect(() => {
         fetchCategories()
     }, []);
-    
   return (
     <Container>
         <Navbar />

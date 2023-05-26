@@ -44,8 +44,8 @@ const Navbar = () => {
   }
 
   const user = JSON.parse(localStorage.getItem("user"))
-  const name = user.name
-
+  const name = user ? user.name : null
+  
   return (
     <Container>
         <Logo>cakeku.co</Logo>

@@ -6,6 +6,7 @@ import { Container, H2, H3, Main } from '../stycomp/stycomp'
 import '../App.css';
 import OrderDetail from '../components/OrderDetail';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const SortDiv = styled.div`
   display: flex;
@@ -20,12 +21,18 @@ const OrderDetailDiv =  styled.div`
 
 const Home = () => {
   const navigate = useNavigate()
-
+  const user = localStorage.getItem("user")
+  
+  console.log(user)
   useEffect(() => {
-    if(localStorage.getItem("user") === null) {
+    if(!user) {
       navigate("/login")
     }
-  })
+  }, [user])
+
+  if(!user){
+    return <>Redirect To Login...</>
+  }
 
   return (
     <Container>

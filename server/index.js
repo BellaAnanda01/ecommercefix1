@@ -16,7 +16,9 @@ mongoose
         console.log(err)
 });
 
-app.use(cors());
+app.use(cors({
+    origin: '*',
+}));
 app.use(express.json());
 app.use("/api/users", userRoute);
 app.use("/api/products", productRoute);

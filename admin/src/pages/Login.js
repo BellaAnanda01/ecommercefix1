@@ -78,6 +78,8 @@ const Login = () => {
                 body: JSON.stringify(postData),
             });
 
+            console.log(res)
+
             if(!res.ok) {
                 setError("Incorrect username or password");
                 throw new Error("Incorrect username or password");

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styled from "styled-components";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { DataContext } from '../DataProvider.js';
+
 
 const Container = styled.div`
     border: 0px;
@@ -147,7 +149,9 @@ const Other = styled.button`
     border: 0;
 `
 
+
 const Product = () => {
+    const { cart, setCart, localCart } = useContext(DataContext);
     const [product, setProduct] = useState([])
     const [error, setError] = useState(null)
     const [quantity, setQuantity] = useState(0);
@@ -158,6 +162,12 @@ const Product = () => {
         try {
             let response = await fetch(`${URL}`)
             const data = await response.json()
+            const productName = data.title
+            const existCart = JSON.parse(localCart)
+            if(localCart){
+                setQuantity(existCart[productName]?existCart[productName]: 0)
+                setCart(existCart)
+            }
             setProduct(data)
         } catch (err) {
             setError(err)
@@ -168,51 +178,39 @@ const Product = () => {
         fetchProduct()
     }, []);
 
-    const handleQuantity = (type) => {
-        if (type === "dec") {
-          quantity > 0 && setQuantity(quantity - 1);
+    useEffect(() => {
+        handleCart()
+    }, [quantity])
 
-          if(localStorage.getItem("carts") === null) {
-            let array = []
-            let cart = {...product, quant: quantity - 1}
-            array.push(cart)
-            localStorage.setItem("carts", JSON.stringify(array))
-          } else {
-            let carts = JSON.parse(localStorage.getItem("carts"));
-            let objIndex = carts.findIndex((obj => obj._id == id))
-            console.log(objIndex)
-            if(objIndex == -1){
-                let cart = {...product, quant: quantity - 1}
-                carts.push(cart)
-            } else {
-                carts[objIndex].quant = quantity - 1
-                if(quantity == -1) {
-                    carts.splice(objIndex, 1)
-                }
-            }
-            localStorage.setItem("carts", JSON.stringify(carts))
-          }
-        } else {
-          setQuantity(quantity + 1);
-          if(localStorage.getItem("carts") === null) {
-            let array = []
-            let cart = {...product, quant: quantity + 1}
-            array.push(cart)
-            localStorage.setItem("carts", JSON.stringify(array))
-          } else {
-            let carts = JSON.parse(localStorage.getItem("carts"));
-            let objIndex = carts.findIndex((obj => obj._id == id))
-            if(objIndex == -1){
-                let cart = {...product, quant: quantity + 1}
-                carts.push(cart)
-            } else {
-                carts[objIndex].quant = quantity + 1
-            }
-            localStorage.setItem("carts", JSON.stringify(carts))
-          }
+    useEffect(() => {
+        localStorage.setItem("cart", JSON.stringify(cart));
+    })
+
+    const handleQuantity =  (type) => {
+        type === "dec"? setQuantity(quantity-1) : setQuantity(quantity+1)
+    }
+
+    const handleCart = () => {
+        const productName = product.title
+        if(quantity === 0){
+            delete cart[productName]
+        }
+        if(quantity === 1){
+            setCart(cart =>({
+                ...cart,
+                [productName] : 1
+                
+            }))
+        }
+        if(cart[productName]){
+            setCart(cart =>({
+                ...cart,
+                [productName] : quantity
+            }))
         }
     };
 
+    console.log(localCart)
   return (
     <Container>
         <Navbar />
